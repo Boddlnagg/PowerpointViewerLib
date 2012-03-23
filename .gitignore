@@ -1,0 +1,7 @@
+bin/
+*/obj/*
+*.suo
+*.sdf
+*.opensdf
+*.user
+*/Debug/*
