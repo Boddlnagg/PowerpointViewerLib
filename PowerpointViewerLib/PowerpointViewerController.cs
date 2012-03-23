@@ -28,7 +28,7 @@ namespace PowerpointViewerLib
 {
 	public class PowerpointViewerController
 	{
-		internal class PowerpointViewerOpenException : ApplicationException { }
+		public class PowerpointViewerOpenException : ApplicationException { }
 
 		internal const string DllName = "pptviewlib.dll";
 
@@ -89,25 +89,32 @@ namespace PowerpointViewerLib
 			viewerPath = GetPPTViewerPath();
 		}
 
+		/// <summary>
+		/// Opens a powerpoint file.
+		/// </summary>
+		/// <param name="filename">The file to open.</param>
+		/// <param name="rect">The rectangle of the area on the screen, where to show the PowerPoint Viewer.</param>
+		/// <param name="generateThumbnails">Whether thumbnails should be generated.</param>
+		/// <param name="openHidden">Whether the PowerPoint Viewer should be opened hidden (outside of the visible screen).</param>
+		/// <returns>
+		/// A <see cref="PowerpointViewerDocument"/> that manages the status of the PowerPoint Viewer instance.
+		/// </returns>
+		/// <exception cref="InvalidOperationException">PowerPoint Viewer could not be found (maybe it's not installed).</exception>
+		/// <exception cref="FileNotFoundException">The file to open could not be found.</exception>
+		/// <exception cref="DllNotFoundException">pptviewlib.dll could not be found.</exception>
+		/// <exception cref="PowerpointViewerOpenException">Something went wrong in pptviewlib.dll</exception>
 		public static PowerpointViewerDocument Open(string filename, Rectangle rect, bool generateThumbnails = true, bool openHidden = false)
 		{
 			if (!IsAvailable)
-				throw new InvalidOperationException("Can't open a file: Powerpoint Viewer could not be found.");
+				throw new InvalidOperationException("Can't open a file: PowerPoint Viewer could not be found.");
 
 			var file = new FileInfo(filename);
 
 			if (!file.Exists)
 				throw new FileNotFoundException(file.FullName);
 
-			try
-			{
-				PowerpointViewerDocument doc = new PowerpointViewerDocument(file.FullName, rect, generateThumbnails, openHidden);
-				return doc;
-			}
-			catch (PowerpointViewerOpenException)
-			{
-				return null;
-			}
+			PowerpointViewerDocument doc = new PowerpointViewerDocument(file.FullName, rect, generateThumbnails, openHidden);
+			return doc;
 		}
 
 		/// <summary>
