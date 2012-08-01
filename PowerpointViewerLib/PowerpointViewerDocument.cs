@@ -93,6 +93,7 @@ namespace PowerpointViewerLib
 		private bool closed = false;
 		private bool openHidden;
 		private volatile List<ThumbnailWrapper> captureThumbs;
+		private readonly int thumbnailWidth;
 
 		public event EventHandler SlideChanged;
 		public event EventHandler Closed;
@@ -116,13 +117,16 @@ namespace PowerpointViewerLib
 
 		private int id = -1;
 
-		internal PowerpointViewerDocument(string filename, Rectangle rect, bool generateThumbnails = true, bool openHidden = false)
+		internal PowerpointViewerDocument(string filename, Rectangle rect, bool generateThumbnails, bool openHidden, int thumbnailWidth)
 		{
 			this.rect = rect;
 			this.openHidden = openHidden;
 
 			if (generateThumbnails)
+			{
 				this.captureThumbs = new List<ThumbnailWrapper>();
+				this.thumbnailWidth = thumbnailWidth;
+			}
 
 			string cmd = PowerpointViewerController.ViewerPath + " /F /S \"" + filename + "\"";
 
@@ -306,6 +310,23 @@ namespace PowerpointViewerLib
 		}
 
 		/// <summary>
+		/// Gets the number of steps of the slide with the given index.
+		/// 1 means that there is no animation on that slide.
+		/// </summary>
+		/// <param name="slide">The slide index.</param>
+		/// <returns></returns>
+		public int GetSlideStepCount(int slide)
+		{
+			if (state != State.Running)
+				throw new InvalidOperationException("Slideshow not loaded yet.");
+
+			if (slide < 0 || slide >= SlideCount)
+				throw new ArgumentOutOfRangeException("slide");
+
+			return slideSteps[slide];
+		}
+
+		/// <summary>
 		/// Sets the focus to the Powerpoint Viewer window.
 		/// </summary>
 		public void Focus()
@@ -441,14 +462,20 @@ namespace PowerpointViewerLib
 			g.Flush();
 			g.Dispose();
 
-			// TODO: This resizes the image to half its width/height. Add an option to define whether and how to resize it.
+			if (thumbnailWidth > 0)
+			{
+				double ratio = (double)rect.Width / rect.Height;
+				int thumbnailHeight = (int)(thumbnailWidth / ratio);
 
-			Bitmap result = new Bitmap(rect.Width / 2, rect.Height / 2);
-			using (Graphics gg = Graphics.FromImage((Image)result))
-				gg.DrawImage(bm, 0, 0, rect.Width / 2, rect.Height / 2);
-			return result;
-
-			//return bm;
+				Bitmap result = new Bitmap(thumbnailWidth, thumbnailHeight);
+				using (Graphics gg = Graphics.FromImage((Image)result))
+					gg.DrawImage(bm, 0, 0, thumbnailWidth, thumbnailHeight);
+				return result;
+			}
+			else
+			{
+				return bm; // do not resize
+			}
 		}
 	}
 }

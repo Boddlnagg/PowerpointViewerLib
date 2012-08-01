@@ -96,6 +96,7 @@ namespace PowerpointViewerLib
 		/// <param name="rect">The rectangle of the area on the screen, where to show the PowerPoint Viewer.</param>
 		/// <param name="generateThumbnails">Whether thumbnails should be generated.</param>
 		/// <param name="openHidden">Whether the PowerPoint Viewer should be opened hidden (outside of the visible screen).</param>
+		/// <param name="thumbnailWidth">If set, defines the size of the generated thumbnails.</param>
 		/// <returns>
 		/// A <see cref="PowerpointViewerDocument"/> that manages the status of the PowerPoint Viewer instance.
 		/// </returns>
@@ -103,7 +104,7 @@ namespace PowerpointViewerLib
 		/// <exception cref="FileNotFoundException">The file to open could not be found.</exception>
 		/// <exception cref="DllNotFoundException">pptviewlib.dll could not be found.</exception>
 		/// <exception cref="PowerpointViewerOpenException">Something went wrong in pptviewlib.dll</exception>
-		public static PowerpointViewerDocument Open(string filename, Rectangle rect, bool generateThumbnails = true, bool openHidden = false)
+		public static PowerpointViewerDocument Open(string filename, Rectangle rect, bool generateThumbnails = true, bool openHidden = false, int thumbnailWidth = 0)
 		{
 			if (!IsAvailable)
 				throw new InvalidOperationException("Can't open a file: PowerPoint Viewer could not be found.");
@@ -113,7 +114,7 @@ namespace PowerpointViewerLib
 			if (!file.Exists)
 				throw new FileNotFoundException(file.FullName);
 
-			PowerpointViewerDocument doc = new PowerpointViewerDocument(file.FullName, rect, generateThumbnails, openHidden);
+			PowerpointViewerDocument doc = new PowerpointViewerDocument(file.FullName, rect, generateThumbnails, openHidden, thumbnailWidth);
 			return doc;
 		}
 
