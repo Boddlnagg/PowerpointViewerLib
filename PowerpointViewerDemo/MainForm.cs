@@ -36,14 +36,21 @@ namespace PowerpointViewerDemo
 				return;
 
 			Rectangle rect = new Rectangle(x, y, width, height);
-			activeDocument = PowerpointViewerController.Open(filename, rect);
-			activeDocument.Loaded += new EventHandler(activeDocument_Loaded);
-			activeDocument.SlideChanged += new EventHandler(activeDocument_SlideChanged);
-			activeDocument.Closed += new EventHandler(activeDocument_Closed);
-			openDocuments.Add(activeDocument);
-			listBoxDocuments.SelectedIndex = listBoxDocuments.Items.Add("Document #"+(counter++));
-			this.UpdateStats();
-			SetForegroundWindow(this.Handle);
+			try
+			{
+				activeDocument = PowerpointViewerController.Open(filename, rect, thumbnailWidth: 200);
+				activeDocument.Loaded += new EventHandler(activeDocument_Loaded);
+				activeDocument.SlideChanged += new EventHandler(activeDocument_SlideChanged);
+				activeDocument.Closed += new EventHandler(activeDocument_Closed);
+				openDocuments.Add(activeDocument);
+				listBoxDocuments.SelectedIndex = listBoxDocuments.Items.Add("Document #" + (counter++));
+				this.UpdateStats();
+				SetForegroundWindow(this.Handle);
+			}
+			catch (PowerpointViewerController.PowerpointViewerOpenException)
+			{
+				MessageBox.Show("Loading failed.");
+			}
 		}
 
 		// VORSICHT: Die Events kommen von einem anderen Thread, deshalb this.Invoke(...)

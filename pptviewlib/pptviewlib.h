@@ -45,6 +45,7 @@ DWORD WINAPI ProcessCallbackMessages( LPVOID lpParam );
 void Unhook(int id);
 VOID SendCallback(int id, int msg, int param);
 void InternalNextStep(int id);
+void ClosePPT(int id, bool force);
 
 #define MAX_PPTS 16
 #define MAX_SLIDES 256

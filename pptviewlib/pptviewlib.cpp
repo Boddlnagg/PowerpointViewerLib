@@ -177,7 +177,7 @@ DllExport int OpenPPT(char *command, func_type callbackFunc, HWND hParentWnd, in
 	if (globalHook == 0)
 	{
 		DEBUG("OpenPPT: SetWindowsHookEx failed\n");
-		ClosePPT(id);
+		ClosePPT(id, true);
 		return -1;
 	}
 	pptView[id].state = PPT_STARTED;
@@ -185,7 +185,7 @@ DllExport int OpenPPT(char *command, func_type callbackFunc, HWND hParentWnd, in
 	if (!CreateProcess(NULL, command, NULL, NULL, FALSE, 0, 0, NULL, &si, &pi))
 	{
 		DEBUG("OpenPPT: CreateProcess failed: %s\n", command);
-		ClosePPT(id);
+		ClosePPT(id, true);
 		return -1;
 	}
 	pptView[id].dwProcessId = pi.dwProcessId;
@@ -196,9 +196,19 @@ DllExport int OpenPPT(char *command, func_type callbackFunc, HWND hParentWnd, in
 	pptView[id].listenerThread = CreateThread(NULL, 0, ProcessCallbackMessages, &id, 0, NULL);
 
 	DEBUG("Listener thread for %d: %d\n", id, pptView[id].listenerThread);
+	
+	int timeout = 0;
 
 	while (pptView[id].state == PPT_STARTED)
+	{
 		Sleep(10);
+		timeout++;
+		if (timeout > 100)
+		{
+			ClosePPT(id, true);
+			return -1;
+		}
+	}
 
 	pptView[id].steps = 0;
 	int steps = 0;
@@ -251,14 +261,16 @@ void Unhook(int id)
 	DEBUG("Unhook: exit ok\n");
 }
 
-// Close the PowerPoint viewer, release resources
-DllExport void ClosePPT(int id)
+void ClosePPT(int id, bool force)
 {
 	DEBUG("ClosePPT: start%d\n", id);
-	SendCallback(id, 6, 0);
-	pptView[id].state = PPT_CLOSED;
+	if (!force)
+	{
+		SendCallback(id, 6, 0);
+		pptView[id].state = PPT_CLOSED;
+	}
 	Unhook(id);
-	if (pptView[id].hWnd == 0)
+	if (force || pptView[id].hWnd == 0)
 	{
 		TerminateThread(pptView[id].hThread, 0);
 	}
@@ -271,11 +283,21 @@ DllExport void ClosePPT(int id)
 
 	TerminateThread(pptView[id].listenerThread, 0);
 	CloseHandle(pptView[id].listenerThread);
+	if (force && pptView[id].hProcess != NULL)
+	{
+		TerminateProcess(pptView[id].hProcess, 0);
+	}
 	CloseHandle(pptView[id].hThread);
 	CloseHandle(pptView[id].hProcess);
 	memset(&pptView[id], 0, sizeof(PPTVIEW));
 	DEBUG("ClosePPT: exit ok\n");
 	return;
+}
+
+// Close the PowerPoint viewer, release resources
+DllExport void ClosePPT(int id)
+{
+	ClosePPT(id, false);
 }
 
 // Take a step forwards through the show
