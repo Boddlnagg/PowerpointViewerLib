@@ -196,16 +196,13 @@ DllExport int OpenPPT(char *command, func_type callbackFunc, HWND hParentWnd, in
 	pptView[id].listenerThread = CreateThread(NULL, 0, ProcessCallbackMessages, &id, 0, NULL);
 
 	DEBUG("Listener thread for %d: %d\n", id, pptView[id].listenerThread);
-	
-	int timeout = 0;
 
 	while (pptView[id].state == PPT_STARTED)
 	{
 		Sleep(10);
-		timeout++;
-		if (timeout > 100)
+		DWORD exitCode;
+		if(!GetExitCodeProcess(pi.hProcess, &exitCode) || exitCode == 0)
 		{
-			ClosePPT(id, true);
 			return -1;
 		}
 	}
