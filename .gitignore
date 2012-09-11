@@ -5,3 +5,6 @@ bin/
 *.opensdf
 *.user
 */Debug/*
+*/Release/*
+ipch/
+
