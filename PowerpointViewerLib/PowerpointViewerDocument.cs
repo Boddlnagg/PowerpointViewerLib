@@ -27,6 +27,16 @@ using System.Threading;
 
 namespace PowerpointViewerLib
 {
+	public class ErrorEventArgs : EventArgs
+	{
+		public Exception Exception { get; private set; }
+
+		public ErrorEventArgs(Exception e)
+		{
+			this.Exception = e;
+		}
+	}
+
 	public class PowerpointViewerDocument
 	{
 		class ThumbnailWrapper
@@ -98,6 +108,7 @@ namespace PowerpointViewerLib
 		public event EventHandler SlideChanged;
 		public event EventHandler Closed;
 		public event EventHandler Loaded;
+		public event EventHandler<ErrorEventArgs> Error;
 
 		PowerpointViewerController.CallbackDelegate del;
 
@@ -162,80 +173,96 @@ namespace PowerpointViewerLib
 				case 4: // Slide change
 					new Thread(() =>
 						{
-							Debug("Slide changed: " + param + " (" + state.ToString() + ")");
-
-							bool repeating = false;
-
-							if ((state == State.Starting || state == State.Loading) && param != 0)
+							try
 							{
-								currentSlide++;
-								if (!slideIds.ContainsKey(param))
+								Debug("Slide changed: " + param + " (" + state.ToString() + ")");
+
+								bool repeating = false;
+
+								if ((state == State.Starting || state == State.Loading) && param != 0)
 								{
-									slideIds.Add(param, currentSlide);
-									slideSteps.Add(currentSlide, 0);
-								}
-								else
-								{
-									repeating = true;
-								}
-							}
-							else if (state == State.Running || state == State.Resetting)
-							{
-								if (param == 0)
-								{
-									PrevStep();
-								}
-								else
-								{
-									currentSlide = slideIds[param];
-									if (state == State.Running)
+									currentSlide++;
+									if (!slideIds.ContainsKey(param))
 									{
-										OnSlideChanged();
+										slideIds.Add(param, currentSlide);
+										slideSteps.Add(currentSlide, 0);
+									}
+									else
+									{
+										repeating = true;
 									}
 								}
-							}
-
-							if (state == State.Loading && currentSlide != -1)
-							{
-								if (param == 0 || repeating) // reached last slide or noticed that slide id's are repeating
+								else if (state == State.Running || state == State.Resetting)
 								{
-									// If we don't go back every single step, PowerPoint remembers
-									// that the slides have been animated and won't show the animations
-									// the next time.
+									if (param == 0)
+									{
+										PrevStep();
+									}
+									else
+									{
+										if (state == State.Resetting && !slideIds.ContainsKey(param))
+										{
+											throw new PowerpointViewerController.PowerpointViewerOpenException();
+										}
+										else
+										{
+											currentSlide = slideIds[param];
+										}
 
-									state = State.Resetting;
-									PrevStep();
+										if (state == State.Running)
+										{
+											OnSlideChanged();
+										}
+									}
 								}
-							}
-							else if (state == State.Resetting)
-							{
-								if (captureThumbs != null)
-								{
-									Bitmap bmp = Capture();
-									captureThumbs.Add(new ThumbnailWrapper { Bitmap = bmp, Slide = currentSlide });
-								}
 
-								int goBackSteps = currentSlide == 0 ? slideSteps[currentSlide] - 1 : slideSteps[currentSlide];
+								if (state == State.Loading && currentSlide != -1)
+								{
+									if (param == 0 || repeating) // reached last slide or noticed that slide id's are repeating
+									{
+										// If we don't go back every single step, PowerPoint remembers
+										// that the slides have been animated and won't show the animations
+										// the next time.
 
-								for (int i = 0; i < goBackSteps; i++)
-								{
-									Debug("Going back (slide #" + currentSlide + ")");
-									PrevStep();
+										state = State.Resetting;
+										PrevStep();
+									}
 								}
-								if (currentSlide == 0) // back at the beginning
+								else if (state == State.Resetting)
 								{
-									state = State.Running;
 									if (captureThumbs != null)
 									{
-										this.Thumbnails = (from t in captureThumbs orderby t.Slide ascending select t.Bitmap).ToList();
+										Bitmap bmp = Capture();
+										captureThumbs.Add(new ThumbnailWrapper { Bitmap = bmp, Slide = currentSlide });
 									}
-									Unblank();
-									if (!openHidden)
-										Show();
-									OnLoaded();
-									OnSlideChanged();
-									Debug("Now running ...");
+
+									int goBackSteps = currentSlide == 0 ? slideSteps[currentSlide] - 1 : slideSteps[currentSlide];
+
+									for (int i = 0; i < goBackSteps; i++)
+									{
+										Debug("Going back (slide #" + currentSlide + ")");
+										PrevStep();
+									}
+									if (currentSlide == 0) // back at the beginning
+									{
+										state = State.Running;
+										if (captureThumbs != null)
+										{
+											this.Thumbnails = (from t in captureThumbs orderby t.Slide ascending select t.Bitmap).ToList();
+										}
+										Unblank();
+										if (!openHidden)
+											Show();
+										OnLoaded();
+										OnSlideChanged();
+										Debug("Now running ...");
+									}
 								}
+							}
+							catch (Exception e)
+							{
+								Close();
+								OnError(e);
 							}
 						}).Start();
 					break;
@@ -258,27 +285,33 @@ namespace PowerpointViewerLib
 			return 0;
 		}
 
+		private void Debug(string p)
+		{
+			System.Diagnostics.Debug.WriteLine("#" + this.id + " - " + p);
+		}
+
 		private void OnLoaded()
 		{
 			if (Loaded != null)
-				Loaded(this, new EventArgs());
-		}
-
-		private void Debug(string p)
-		{
-			Console.WriteLine("#" + this.id + " - " + p);
+				Loaded(this, EventArgs.Empty);
 		}
 
 		private void OnClosed()
 		{
 			if (Closed != null)
-				Closed(this, new EventArgs());
+				Closed(this, EventArgs.Empty);
 		}
 
 		private void OnSlideChanged()
 		{
 			if (SlideChanged != null)
-				SlideChanged(this, new EventArgs());
+				SlideChanged(this, EventArgs.Empty);
+		}
+
+		private void OnError(Exception e)
+		{
+			if (Error != null)
+				Error(this, new ErrorEventArgs(e));
 		}
 
 		/// <summary>
