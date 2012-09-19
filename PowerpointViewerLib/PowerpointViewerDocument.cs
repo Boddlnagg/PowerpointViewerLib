@@ -232,7 +232,7 @@ namespace PowerpointViewerLib
 								{
 									if (captureThumbs != null)
 									{
-										Bitmap bmp = Capture();
+										Bitmap bmp = Capture(this.thumbnailWidth);
 										captureThumbs.Add(new ThumbnailWrapper { Bitmap = bmp, Slide = currentSlide });
 									}
 
@@ -475,12 +475,17 @@ namespace PowerpointViewerLib
 			}
 		}
 
+		public Bitmap CaptureWindow(int width)
+		{
+			return Capture(width);
+		}
+
 		~PowerpointViewerDocument()
 		{
 			this.Close();
 		}
 
-		private Bitmap Capture()
+		private Bitmap Capture(int thumbnailWidth)
 		{
 			Rectangle rc;
 			GetWindowRect(hWnd, out rc);
@@ -503,6 +508,7 @@ namespace PowerpointViewerLib
 				Bitmap result = new Bitmap(thumbnailWidth, thumbnailHeight);
 				using (Graphics gg = Graphics.FromImage((Image)result))
 					gg.DrawImage(bm, 0, 0, thumbnailWidth, thumbnailHeight);
+				bm.Dispose();
 				return result;
 			}
 			else
