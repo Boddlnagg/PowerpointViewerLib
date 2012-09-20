@@ -3,7 +3,7 @@
 * Originally part of OpenLP - Open Source Lyrics Projection                   *
 * --------------------------------------------------------------------------- *
 * Copyright (c) 2012 Kai Patrick Reisert                                      *
-* Original oopyright (c) 2008-2011 Raoul Snyman                               *
+* Original copyright (c) 2008-2011 Raoul Snyman                               *
 * Portions copyright (c) 2008-2011 Tim Bentley, Jonathan Corwin, Michael      *
 * Gorven, Scott Guerrieri, Matthias Hub, Meinert Jordan, Armin Köhler,        *
 * Andreas Preikschat, Mattias Põldaru, Christian Richter, Philip Ridout,      *
