@@ -1,7 +1,7 @@
 ﻿/*
  * PowerpointViewerLib - PowerPoint Viewer 2003/2007 Controller
  * 
- * Copyright (c) 2012 Kai Patrick Reisert
+ * Copyright (c) 2012-2013 Kai Patrick Reisert
  * Portions copyright (c) 2008-2011 Raoul Snyman, Tim Bentley, Jonathan Corwin,
  * Michael Gorven, Scott Guerrieri, Matthias Hub, Meinert Jordan, Armin Köhler,
  * Andreas Preikschat, Mattias Põldaru, Christian Richter, Philip Ridout,
