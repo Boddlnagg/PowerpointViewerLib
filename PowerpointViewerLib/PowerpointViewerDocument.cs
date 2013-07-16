@@ -103,8 +103,20 @@ namespace PowerpointViewerLib
 			}
 		}
 
+		public bool IsEndless
+		{
+			get
+			{
+				if (state != State.Running)
+					throw new InvalidOperationException("Slideshow not loaded yet.");
+
+				return endless;
+			}
+		}
+
 		private Rectangle rect;
 		private bool closed = false;
+		private bool endless = false;
 		private bool openHidden;
 		private volatile List<ThumbnailWrapper> captureThumbs;
 		private readonly int thumbnailWidth;
@@ -181,8 +193,6 @@ namespace PowerpointViewerLib
 							{
 								Debug("Slide changed: " + param + " (" + state.ToString() + ")");
 
-								bool repeating = false;
-
 								if ((state == State.Starting || state == State.Loading) && param != 0)
 								{
 									currentSlide++;
@@ -193,7 +203,7 @@ namespace PowerpointViewerLib
 									}
 									else
 									{
-										repeating = true;
+										endless = true;
 									}
 								}
 								else if (state == State.Running || state == State.Resetting)
@@ -222,7 +232,7 @@ namespace PowerpointViewerLib
 
 								if (state == State.Loading && currentSlide != -1)
 								{
-									if (param == 0 || repeating) // reached last slide or noticed that slide id's are repeating
+									if (param == 0 || endless) // reached last slide or noticed that slide id's are repeating
 									{
 										// If we don't go back every single step, PowerPoint remembers
 										// that the slides have been animated and won't show the animations
