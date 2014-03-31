@@ -230,6 +230,8 @@ namespace PowerpointViewerLib
 									}
 								}
 
+								bool resetNow = false;
+
 								if (state == State.Loading && currentSlide != -1)
 								{
 									if (param == 0 || endless) // reached last slide or noticed that slide id's are repeating
@@ -239,10 +241,27 @@ namespace PowerpointViewerLib
 										// the next time.
 
 										state = State.Resetting;
-										PrevStep();
+										
+										// If we're repeating a single slide without any steps, going one step back
+										// won't change the slide, therefore we need to do the resetting directly
+										// without waiting for the next event
+										if (endless && slideIds.Count == 1 && slideSteps[0] <= 1)
+										{
+											currentSlide = 0;
+											resetNow = true;
+										}
+										else
+										{
+											PrevStep();
+										}
 									}
 								}
 								else if (state == State.Resetting)
+								{
+									resetNow = true;
+								}
+								
+								if (resetNow)
 								{
 									if (captureThumbs != null)
 									{
