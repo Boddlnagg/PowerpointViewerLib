@@ -2,7 +2,7 @@
 * PptViewLib - PowerPoint Viewer 2003/2007 Controller                         *
 * Originally part of OpenLP - Open Source Lyrics Projection                   *
 * --------------------------------------------------------------------------- *
-* Copyright (c) 2012-2013 Kai Patrick Reisert                                      *
+* Copyright (c) 2012-2014 Kai Patrick Reisert                                      *
 * Original copyright (c) 2008-2011 Raoul Snyman                              *
 * Portions copyright (c) 2008-2011 Tim Bentley, Jonathan Corwin, Michael      *
 * Gorven, Scott Guerrieri, Matthias Hub, Meinert Jordan, Armin Köhler,        *

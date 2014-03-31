@@ -53,7 +53,7 @@ namespace PowerpointViewerDemo
 			}
 		}
 
-		// VORSICHT: Die Events kommen von einem anderen Thread, deshalb this.Invoke(...)
+		// ATTENTION: Events arrive on a different thread, therefore we need this.Invoke(...)
 		void activeDocument_SlideChanged(object sender, EventArgs e)
 		{
 			this.Invoke(new Action(this.UpdateStats));
