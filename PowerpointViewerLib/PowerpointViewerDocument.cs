@@ -125,6 +125,7 @@ namespace PowerpointViewerLib
 		public event EventHandler Closed;
 		public event EventHandler Loaded;
 		public event EventHandler<ErrorEventArgs> Error;
+		public event EventHandler HiddenSlide;
 
 		PowerpointViewerController.CallbackDelegate del;
 
@@ -214,18 +215,25 @@ namespace PowerpointViewerLib
 									}
 									else
 									{
-										if (state == State.Resetting && !slideIds.ContainsKey(param))
+										if (!slideIds.ContainsKey(param))
 										{
-											throw new PowerpointViewerController.PowerpointViewerOpenException();
+											if (state == State.Resetting)
+											{
+												throw new PowerpointViewerController.PowerpointViewerOpenException();
+											}
+											else
+											{
+												OnHiddenSlide();
+											}
 										}
 										else
 										{
 											currentSlide = slideIds[param];
-										}
 
-										if (state == State.Running)
-										{
-											OnSlideChanged();
+											if (state == State.Running)
+											{
+												OnSlideChanged();
+											}
 										}
 									}
 								}
@@ -339,6 +347,12 @@ namespace PowerpointViewerLib
 		{
 			if (SlideChanged != null)
 				SlideChanged(this, EventArgs.Empty);
+		}
+
+		private void OnHiddenSlide()
+		{
+			if (HiddenSlide != null)
+				HiddenSlide(this, EventArgs.Empty);
 		}
 
 		private void OnError(Exception e)

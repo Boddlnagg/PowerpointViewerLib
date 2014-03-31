@@ -42,6 +42,7 @@ namespace PowerpointViewerDemo
 				activeDocument.Loaded += new EventHandler(activeDocument_Loaded);
 				activeDocument.SlideChanged += new EventHandler(activeDocument_SlideChanged);
 				activeDocument.Closed += new EventHandler(activeDocument_Closed);
+				activeDocument.HiddenSlide += new EventHandler(activeDocument_HiddenSlide);
 				openDocuments.Add(activeDocument);
 				listBoxDocuments.SelectedIndex = listBoxDocuments.Items.Add("Document #" + (counter++));
 				this.UpdateStats();
@@ -76,6 +77,11 @@ namespace PowerpointViewerDemo
 					listBoxDocuments.Items.RemoveAt(i);
 				}), sender as PowerpointViewerDocument);
 			}
+		}
+
+		void activeDocument_HiddenSlide(object sender, EventArgs e)
+		{
+			this.Invoke(new Action(() => MessageBox.Show("There is at least one hidden slide in the presentation. Slide indexing does not work correctly with hidden slides.")));
 		}
 
 		public void UpdateStats()
