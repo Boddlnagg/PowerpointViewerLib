@@ -1,10 +1,7 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerpointViewerLib", "PowerpointViewerLib\PowerpointViewerLib.csproj", "{F36E815C-5B9C-4E5F-B82D-E5A718E504E6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{04CC20D1-DC5A-4189-8181-4011E3C21DCF} = {04CC20D1-DC5A-4189-8181-4011E3C21DCF}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerpointViewerDemo", "PowerpointViewerDemo\PowerpointViewerDemo.csproj", "{78FE1EC7-878F-4CFD-846C-2E1C7391E272}"
 EndProject

@@ -26,6 +26,7 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Microsoft.Win32;
 
 namespace PowerpointViewerLib
@@ -40,7 +41,10 @@ namespace PowerpointViewerLib
 		internal delegate int CallbackDelegate(int msg, int param);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern int OpenPPT(StringBuilder command, CallbackDelegate func, IntPtr hParentWnd, int x, int y, int width, int height);
+		internal static extern void init_runtime();
+
+		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+		internal static extern int OpenPPT(StringBuilder command, /*CallbackDelegate func, IntPtr hParentWnd, */int x, int y, int width, int height);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void ClosePPT(int id);
@@ -91,6 +95,11 @@ namespace PowerpointViewerLib
 		private PowerpointViewerController()
 		{
 			viewerPath = GetPPTViewerPath();
+		}
+
+		static PowerpointViewerController()
+		{
+			new Thread((ThreadStart)init_runtime);
 		}
 
 		/// <summary>

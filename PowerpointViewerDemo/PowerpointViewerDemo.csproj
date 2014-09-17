@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{78FE1EC7-878F-4CFD-846C-2E1C7391E272}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PowerpointViewerDemo</RootNamespace>
     <AssemblyName>PowerpointViewerDemo</AssemblyName>
