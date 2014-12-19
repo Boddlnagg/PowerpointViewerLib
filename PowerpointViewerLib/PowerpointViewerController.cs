@@ -41,9 +41,6 @@ namespace PowerpointViewerLib
 		internal delegate int CallbackDelegate(int msg, int param);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern void init_runtime();
-
-		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern int OpenPPT(StringBuilder command, /*CallbackDelegate func, IntPtr hParentWnd, */int x, int y, int width, int height);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
@@ -95,11 +92,6 @@ namespace PowerpointViewerLib
 		private PowerpointViewerController()
 		{
 			viewerPath = GetPPTViewerPath();
-		}
-
-		static PowerpointViewerController()
-		{
-			new Thread((ThreadStart)init_runtime);
 		}
 
 		/// <summary>

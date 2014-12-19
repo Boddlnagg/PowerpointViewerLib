@@ -1,9 +1,7 @@
-#![allow(unused_variable)]
+#![allow(unused_variables)]
 #![allow(non_snake_case)]
-#![allow(visible_private_types)]
 
 extern crate libc;
-extern crate native;
 
 use std::c_str::CString;
 //use libc::HANDLE;
@@ -17,15 +15,6 @@ pub extern "C" fn DllMain(hModule: HANDLE, ulReasonForCall: i32, lpReserved: LPV
     native::start(0, 0 as *const *const u8, main);
     true
 }*/
-
-fn entry() {
-    println!("Runtime started.");
-}
-
-#[no_mangle]
-pub extern "C" fn init_runtime() {
-    native::start(0, 0 as *const *const u8, entry);
-}
 
 #[no_mangle]
 pub extern "C" fn OpenPPT(command: CString, /*func: extern "C" fn(i32,i32) -> i32,  hParentWnd: *const i32,*/ x: i32, y: i32, width: i32, height: i32) -> i32 {
