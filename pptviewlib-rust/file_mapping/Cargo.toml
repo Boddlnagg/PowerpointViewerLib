@@ -1,0 +1,8 @@
+[package]
+name = "file_mapping"
+version = "0.0.1"
+authors = ["Patrick Reisert <kpreisert@googlemail.com>"]
+
+[dependencies.winapi]
+version = "0.0.2"
+features = ["kernel32", "user32"]

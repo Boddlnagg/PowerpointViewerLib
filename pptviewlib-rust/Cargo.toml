@@ -1,0 +1,15 @@
+[package]
+name = "pptviewlib"
+version = "0.0.1"
+authors = ["Patrick Reisert <kpreisert@googlemail.com>"]
+
+[lib]
+name = "pptviewlib"
+crate_type = ["dylib"]
+
+[dependencies.file_mapping]
+path = "file_mapping"
+
+[dependencies.winapi]
+version = "0.0.2"
+features = ["kernel32", "user32"]

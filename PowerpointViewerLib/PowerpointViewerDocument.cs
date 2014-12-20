@@ -156,11 +156,11 @@ namespace PowerpointViewerLib
 				this.thumbnailWidth = thumbnailWidth;
 			}
 
-			string cmd = PowerpointViewerController.ViewerPath + " /F /S \"" + filename + "\"";
+			//string cmd = PowerpointViewerController.ViewerPath + " /F /S \"" + filename + "\"";
 
 			del = new PowerpointViewerController.CallbackDelegate(Callback);
 
-			this.id = PowerpointViewerController.OpenPPT(new StringBuilder(cmd),/* del, IntPtr.Zero, */rect.X, rect.Y, rect.Width, rect.Height);
+			this.id = PowerpointViewerController.OpenPPT(PowerpointViewerController.ViewerPath, filename,/* del, IntPtr.Zero, */rect.X, rect.Y, rect.Width, rect.Height);
 			if (this.id == -1)
 				throw new PowerpointViewerController.PowerpointViewerOpenException();
 		}
