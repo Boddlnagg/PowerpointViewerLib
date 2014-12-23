@@ -41,7 +41,7 @@ namespace PowerpointViewerLib
 		internal delegate int CallbackDelegate(int msg, int param);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
-		internal static extern int OpenPPT(string exe, string ppt, /*CallbackDelegate func, IntPtr hParentWnd, */int x, int y, int width, int height);
+		internal static extern int OpenPPT(string exe, string ppt, /*CallbackDelegate func,*/ IntPtr hParentWnd, int x, int y, int width, int height);
 
 		[DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
 		internal static extern void ClosePPT(int id);
